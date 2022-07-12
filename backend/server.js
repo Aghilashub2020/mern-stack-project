@@ -7,6 +7,7 @@ require("dotenv").config();
 const PORT = process.env.PORT;
 const app = express();
 
+
 // Routes
 app.get("/", (req, res) => {
     res.send("Welcome to our messaging app.")
@@ -28,3 +29,8 @@ app.get("*", (req, res) => {
 app.listen(PORT, () => {
     console.log("Server is listening at port", PORT)
 });
+
+// Connect Mongoose
+mongoose.connect(process.env.MONGOURI, () => {
+    console.log("Mongoose connected to MongoDB")
+})
