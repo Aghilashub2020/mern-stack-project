@@ -16,6 +16,7 @@ messagesController.get("/", async (req, res) => {
     res.send(foundMessages);
 });
 
+// Creates new message
 messagesController.post("/", jsonParser, (req, res) => {
     console.log("Posted new message", req.body);
     let newMessage = new Message(req.body);
@@ -27,9 +28,10 @@ messagesController.post("/", jsonParser, (req, res) => {
     res.send(req.body);
 });
 
-// Room parameter
+// Room parameter, finds messages in a room
 messagesController.get("/:room", jsonParser, async (req, res) => {
-    const foundMessages = await Message.find({"Room": "62cdf897d3a8b46206fb291b"})
+    const foundMessages = await Message.find({room: req.params.room})
+    console.log(foundMessages)
     res.send(foundMessages)
 })
 
