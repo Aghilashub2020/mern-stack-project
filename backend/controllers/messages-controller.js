@@ -28,6 +28,23 @@ messagesController.post("/", jsonParser, (req, res) => {
     res.send(req.body);
 });
 
+// Sends message to room
+messagesController.post("/:room", jsonParser, (req, res) => {
+    console.log(req.body)
+    const newMessage = new Message({
+        name: req.body.name,
+        timeStamp: new Date(),
+        text: req.body.text,
+        room: req.params.room
+    })
+    newMessage.save(err => {
+        if (err) {
+            console.log(err)
+        }
+    })
+    res.send(newMessage)
+})
+
 // Room parameter, finds messages in a room
 messagesController.get("/:room", jsonParser, async (req, res) => {
     const foundMessages = await Message.find({room: req.params.room})
