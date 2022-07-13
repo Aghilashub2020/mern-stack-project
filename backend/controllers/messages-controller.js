@@ -47,9 +47,9 @@ messagesController.post("/:room", jsonParser, (req, res) => {
 
 // Room parameter, finds messages in a room
 messagesController.get("/:room", jsonParser, async (req, res) => {
-    const foundMessages = await Message.find({room: req.params.room})
+    const foundMessages = await Message.find({room: req.params.room}).sort({_id: -1}).limit(12)
     console.log(foundMessages)
-    res.send(foundMessages)
+    res.send(foundMessages.reverse())
 })
 
 module.exports = messagesController;
