@@ -25,4 +25,9 @@ roomsController.post("/", jsonParser, (req, res) => {
     res.send(req.body);
 });
 
+roomsController.delete("/:room", async (req, res) => {
+    await Room.deleteOne({_id: req.params.room})
+    res.send(`Successfully deleted room with _id ${req.params.room}`)
+})
+
 module.exports = roomsController;

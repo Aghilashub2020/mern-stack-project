@@ -1,11 +1,59 @@
 body {
-  background-color: #FFFFFA;
+  background-color: #c25954;
 }
 
-body * {
-  background-color: #44A1A0;
+.App {
+  margin: 2vh 2vw 2vh 2vw;
+  background-color: white;
+  height: 95vh;
+  width: 95vw;
+  box-shadow: 3px 3px 8px;
+  border-radius: 5px;
+  overflow: auto;
 }
 
-body > div {
-  background-color: #44A1A0
+input::placeholder {
+  color: grey;
+}
+
+.messages {
+  background-color: #87b3df;
+  box-shadow: 1px 1px 2px;
+  border-radius: 3px;
+  margin: 0 0 5px 0;
+}
+
+.messageBody {
+  display: flex;
+}
+
+.messageText {
+  margin: 0 0 2px 5px;
+}
+
+.messageName {
+  margin: 2px 2px 0 2px ;
+}
+
+.room {
+  margin: 5px;
+}
+
+.roomSelector {
+  margin: auto;
+  display: flex;
+  padding-top: 1vh;
+}
+
+.roomSelector * {
+  background-color: lightgrey;
+  margin: auto;
+  border: solid 1px black;
+  border-radius: 5px;
+  padding: 2px;
+  user-select: none;
+}
+
+.roomSelector *:hover {
+  background-color: darkgrey;
 }

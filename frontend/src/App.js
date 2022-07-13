@@ -1,5 +1,7 @@
 import './App.css';
 import { useState, useEffect } from 'react';
+import Room from './components/Room'
+import RoomSelector from './components/RoomSelector'
 
 function App() {
   const [inRoom, setInRoom] = useState(false)
@@ -15,15 +17,15 @@ function App() {
     setRoomData(res)
   }
 
-  async function fetchMessageData(id){
+  async function fetchMessageData(){
     let res = await fetch(`http://localhost:5000/messages/${roomId}`, { method: "GET"})
     res = await res.json()
     setMessageData(res)
   }
 
-  const inputKeydown = (e, text) => {
+  const inputKeydown = async (e, text) => {
     if (e.key === 'Enter') {
-      fetch(`http://localhost:5000/messages/${roomId}`, { method: "POST", headers: {
+      await fetch(`http://localhost:5000/messages/${roomId}`, { method: "POST", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       }, body: JSON.stringify({
@@ -31,18 +33,12 @@ function App() {
         "text": text
       })})
 
-      fetchMessageData()
+      await fetchMessageData()
     }
   }
 
   const handleInputChange = (e) => {
     setTextInput(e.target.value)
-  }
-
-  const renderInput = () => {
-    return (
-      <input type="text" onChange={(e) => handleInputChange(e)} onKeyDown={(e) => {inputKeydown(e,textInput)}}></input>
-    )
   }
 
   useEffect(() => {
@@ -57,25 +53,10 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Hello</h1>
-      <div>
-        {Array.isArray(messageData) ? messageData.map((message) => {
-          return (
-            <div key={message._id}>
-              <h2>{message.name}</h2>
-              <h3>{message.text}</h3>
-            </div>
-          )
-        }) : "You are not in a room"}
-      </div>
-        {inRoom ? renderInput() : ""}
-      <div>
-        {Array.isArray(roomData) ? roomData.map((room) => {
-          return (
-            <button id={room._id} key={room._id} onClick={() => {setRoomId(room._id); setInRoom(true)}}>{room.name}</button>
-          )
-        }) : "Not an array"}
-      </div>
+      <RoomSelector roomData={roomData} setInRoom={setInRoom} setRoomId={setRoomId}/>
+      <Room messageData={messageData}
+      inRoom={inRoom} handleInputChange={handleInputChange} 
+      inputKeydown={inputKeydown} textInput={textInput}/>
     </div>
   );
 };
