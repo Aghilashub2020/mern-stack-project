@@ -11,6 +11,18 @@ function App() {
   const [userName, setUserName] = useState("Default")
   const [textInput, setTextInput] = useState(null)
 
+  const messageInterval = {
+    interval: null,
+    start: function() {
+      this.interval = setInterval(() => {
+        fetchMessageData()
+      }, 2000)
+    },
+    stop: function() {
+      clearInterval(this.interval)
+    }
+  }
+
   async function fecthRoomData(){
     let res = await fetch("http://localhost:5000/rooms", { method: "GET"})
     res = await res.json()
@@ -48,6 +60,10 @@ function App() {
   useEffect(() => {
     if (roomId !== null) {
       fetchMessageData()
+      messageInterval.start()
+      return () => {
+        messageInterval.stop()
+      }
     }
   }, [roomId])
 
