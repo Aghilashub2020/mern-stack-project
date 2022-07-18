@@ -70,3 +70,7 @@ input::placeholder {
 .backButton:hover {
   background-color: #af4944;
 }
+
+.userNameInput{
+  margin-left: 22px;
+}
