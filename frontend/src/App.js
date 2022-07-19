@@ -75,7 +75,7 @@ function App() {
           return
         }
       }
-      fetch(`https://msbjs.herokuapp.com/rooms/`, { method: "POST", headers: {
+      /*fetch(`https://msbjs.herokuapp.com/rooms/`, { method: "POST", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       }, body: JSON.stringify({
@@ -83,7 +83,7 @@ function App() {
       })})
         .then(fetchRoomData)
         .then(() => {setRoomName(e.target.value); setInRoom(true)})
-
+        */
     }
     
   }
