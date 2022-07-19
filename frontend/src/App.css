@@ -72,5 +72,13 @@ input::placeholder {
 }
 
 .userNameInput{
-  margin-left: 22px;
+  margin: auto;
+}
+
+.homePage {
+  display: flex;
+}
+
+.roomInput {
+  margin: auto;
 }
