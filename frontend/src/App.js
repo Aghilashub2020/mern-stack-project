@@ -1,8 +1,7 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import Room from './components/Room'
-import RoomSelector from './components/RoomSelector'
-import UserName from './components/UserName'
+import HomePage from './components/HomePage'
 
 function App() {
   const [roomName, setRoomName] = useState(null)
@@ -10,7 +9,7 @@ function App() {
   const [roomData, setRoomData] = useState(null)
   const [roomId, setRoomId] = useState(null)
   const [messageData, setMessageData] = useState(null)
-  const [userName, setUserName] = useState("Default")
+  const [userName, setUserName] = useState("New user")
   const [textInput, setTextInput] = useState(null)
 
   const messageInterval = {
@@ -39,6 +38,7 @@ function App() {
     let res = await fetch(`https://msbjs.herokuapp.com/messages/${roomId}`, { method: "GET"})
     res = await res.json()
     setMessageData(res)
+    return res
   }
 
   const inputKeydown = async (e, text) => {
@@ -52,13 +52,40 @@ function App() {
       })})
 
       await fetchMessageData()
+
+      e.target.value = ""
     }
   }
 
   const userNameInput = (e,name,callback) => {
     if (e.key === 'Enter') {
       callback(name)
+
+      e.target.value = ""
     }
+  }
+
+  const roomSelect = (e, setRoomName, setRoomId, roomData, setInRoom) => {
+    if (e.key === 'Enter') {
+      for(let i = 0; i < roomData.length; i++) {
+        if (roomData[i].name === e.target.value) {
+          setRoomId(roomData[i]._id)
+          setInRoom(true)
+          setRoomName(e.target.value)
+          return
+        }
+      }
+      fetch(`https://msbjs.herokuapp.com/rooms/`, { method: "POST", headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      }, body: JSON.stringify({
+        "name": e.target.value
+      })})
+        .then(fetchRoomData)
+        .then(() => {setRoomName(e.target.value); setInRoom(true)})
+
+    }
+    
   }
 
   const handleInputChange = (e) => {
@@ -81,16 +108,14 @@ function App() {
 
   return (
     <div className="App">
-      {!inRoom ? <RoomSelector roomData={roomData}
-      setInRoom={setInRoom}
-      setRoomName={setRoomName} setRoomId={setRoomId}/> :
-      ""}
       {inRoom ? <Room messageData={messageData}
       inRoom={inRoom} handleInputChange={handleInputChange}
       inputKeydown={inputKeydown} textInput={textInput}
       setInRoom={setInRoom}
       roomName={roomName} goBack={goBack}/> :
-      <UserName onKeyDown={userNameInput} setUserName={setUserName}/>}
+      <HomePage roomData={roomData} setInRoom={setInRoom}
+      setRoomId={setRoomId} userName={userName} setRoomName={setRoomName}
+      roomSelect={roomSelect} setUserName={setUserName} userNameInput={userNameInput}/>}
     </div>
   );
 };
