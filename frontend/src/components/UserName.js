@@ -5,7 +5,7 @@ export default (props) => {
 
     return (
         <div className="userNameInput">
-            <h3>{(userName !== "Default") ? `Your Username is ${userName}` : "Enter User Name:"}</h3>
+            <h3>{(userName !== "New user") ? `Your Username is ${userName}` : "Enter User Name:"}</h3>
              <input type="text" onKeyDown={(e) => {onKeyDown(e, e.target.value, setUserName)}} placeholder="Type here" />
         </div>
     )
