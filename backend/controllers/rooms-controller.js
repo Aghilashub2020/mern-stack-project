@@ -7,6 +7,7 @@ const jsonParser = bodyParser.json();
 
 // Requiring model
 const Room = require("../models/Room");
+const Message = require("../models/Message")
 
 // Routes
 roomsController.get("/", async (req, res) => {
@@ -27,6 +28,7 @@ roomsController.post("/", jsonParser, (req, res) => {
 
 roomsController.delete("/:room", async (req, res) => {
     await Room.deleteOne({_id: req.params.room})
+    await Message.deleteMany({room: req.params.room})
     res.send(`Successfully deleted room with _id ${req.params.room}`)
 })
 

@@ -57,3 +57,20 @@ input::placeholder {
 .roomSelector *:hover {
   background-color: darkgrey;
 }
+
+.backButton {
+  user-select: none;
+  border: solid 1px black;
+  border-radius: 5px;
+  padding: 2px;
+  margin: auto;
+  background-color: #c25954;
+}
+
+.backButton:hover {
+  background-color: #af4944;
+}
+
+.userNameInput{
+  margin-left: 22px;
+}
