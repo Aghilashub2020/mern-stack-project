@@ -17,7 +17,19 @@ function App() {
     start: function() {
       this.interval = setInterval(() => {
         fetchMessageData()
-      }, 2000)
+      }, 1000)
+    },
+    stop: function() {
+      clearInterval(this.interval)
+    }
+  }
+
+  const roomInterval = {
+    interval: null,
+    start: function() {
+      this.interval = setInterval(() => {
+        fetchRoomData()
+      },5000)
     },
     stop: function() {
       clearInterval(this.interval)
@@ -29,13 +41,13 @@ function App() {
   }
 
   async function fetchRoomData(){
-    let res = await fetch("https://msbjs.herokuapp.com/rooms", { method: "GET"})
+    let res = await fetch("https://cool-team-backend.herokuapp.com/rooms", { method: "GET"})
     res = await res.json()
     setRoomData(res)
   }
 
   async function fetchMessageData(){
-    let res = await fetch(`https://msbjs.herokuapp.com/messages/${roomId}`, { method: "GET"})
+    let res = await fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "GET"})
     res = await res.json()
     setMessageData(res)
     return res
@@ -43,7 +55,7 @@ function App() {
 
   const inputKeydown = async (e, text) => {
     if (e.key === 'Enter') {
-      await fetch(`https://msbjs.herokuapp.com/messages/${roomId}`, { method: "POST", headers: {
+      await fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "POST", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       }, body: JSON.stringify({
@@ -54,6 +66,7 @@ function App() {
       await fetchMessageData()
 
       e.target.value = ""
+      setTextInput("")
     }
   }
 
@@ -75,15 +88,23 @@ function App() {
           return
         }
       }
-      /*fetch(`https://msbjs.herokuapp.com/rooms/`, { method: "POST", headers: {
+      fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       }, body: JSON.stringify({
         "name": e.target.value
       })})
         .then(fetchRoomData)
-        .then(() => {setRoomName(e.target.value); setInRoom(true)})
-        */
+        .then(() => {setRoomName(e.target.value)})
+        .then(() => {
+          for(let i = 0; i < roomData.length; i++) {
+            if (roomData[i].name === roomName) {
+              setRoomId(roomData[i]._id)
+              setInRoom(true)
+              return
+            }
+          }
+        })
     }
     
   }
@@ -91,10 +112,6 @@ function App() {
   const handleInputChange = (e) => {
     setTextInput(e.target.value)
   }
-
-  useEffect(() => {
-    fetchRoomData()
-  }, [])
 
   useEffect(() => {
     if (roomId !== null) {
@@ -105,6 +122,16 @@ function App() {
       }
     }
   }, [roomId])
+
+  useEffect(() => {
+    if (!inRoom) {
+      fetchRoomData()
+      roomInterval.start()
+      return () => {
+        roomInterval.stop()
+      }
+    }
+  }, [inRoom])
 
   return (
     <div className="App">
