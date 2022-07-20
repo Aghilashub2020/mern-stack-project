@@ -10,7 +10,7 @@ function App() {
   const [roomId, setRoomId] = useState(null)
   const [messageData, setMessageData] = useState(null)
   const [userName, setUserName] = useState("New user")
-  const [textInput, setTextInput] = useState(null)
+  const [roomIsFound, setRoomIsFound] = useState(false)
 
   const messageInterval = {
     interval: null,
@@ -37,36 +37,38 @@ function App() {
   }
 
   const goBack = () => {
+    setRoomName(null)
+    setRoomId(null)
+    setRoomIsFound(false)
     setInRoom(false)
+    setMessageData(null)
   }
 
-  async function fetchRoomData(){
-    let res = await fetch("https://cool-team-backend.herokuapp.com/rooms", { method: "GET"})
-    res = await res.json()
-    setRoomData(res)
+  function fetchRoomData(){
+    fetch("https://cool-team-backend.herokuapp.com/rooms", { method: "GET"})
+      .then(data => data.json())
+      .then(data => setRoomData(data))
   }
 
-  async function fetchMessageData(){
-    let res = await fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "GET"})
-    res = await res.json()
-    setMessageData(res)
-    return res
+  function fetchMessageData(){
+    fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "GET"})
+      .then(data => data.json())
+      .then(data => setMessageData(data))
   }
 
-  const inputKeydown = async (e, text) => {
-    if (e.key === 'Enter') {
-      await fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "POST", headers: {
+  const inputKeydown = (e) => {
+    if (e.key === 'Enter' && roomId !== null) {
+      fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "POST", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       }, body: JSON.stringify({
         "name": userName,
-        "text": text
+        "text": e.target.value
       })})
 
-      await fetchMessageData()
+      fetchMessageData()
 
       e.target.value = ""
-      setTextInput("")
     }
   }
 
@@ -82,35 +84,32 @@ function App() {
     if (e.key === 'Enter') {
       for(let i = 0; i < roomData.length; i++) {
         if (roomData[i].name === e.target.value) {
-          setRoomId(roomData[i]._id)
-          setInRoom(true)
           setRoomName(e.target.value)
+          setRoomId(roomData[i]._id)
+          setRoomIsFound(true)
+          setInRoom(true)
           return
         }
       }
-      fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", headers: {
+      if (!roomIsFound){
+        fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
-      }, body: JSON.stringify({
+        }, body: JSON.stringify({
         "name": e.target.value
-      })})
-        .then(fetchRoomData)
-        .then(() => {setRoomName(e.target.value)})
-        .then(() => {
-          for(let i = 0; i < roomData.length; i++) {
-            if (roomData[i].name === roomName) {
-              setRoomId(roomData[i]._id)
-              setInRoom(true)
-              return
+        })})
+          .then(fetchRoomData)
+          .then(() => {
+            for(let i = 0; i < roomData.length; i++) {
+              if (roomData[i].name === roomName) {
+                setRoomId(roomData[i]._id)
+                return
+              }
             }
-          }
-        })
-    }
-    
-  }
-
-  const handleInputChange = (e) => {
-    setTextInput(e.target.value)
+          })
+          .then(setInRoom(true), setRoomIsFound(true))
+        }
+      }
   }
 
   useEffect(() => {
@@ -135,9 +134,9 @@ function App() {
 
   return (
     <div className="App">
-      {inRoom ? <Room messageData={messageData}
-      inRoom={inRoom} handleInputChange={handleInputChange}
-      inputKeydown={inputKeydown} textInput={textInput}
+      {(inRoom && (roomId) !== null) ? <Room messageData={messageData}
+      inRoom={inRoom}
+      inputKeydown={inputKeydown}
       setInRoom={setInRoom}
       roomName={roomName} goBack={goBack}/> :
       <HomePage roomData={roomData} setInRoom={setInRoom}
