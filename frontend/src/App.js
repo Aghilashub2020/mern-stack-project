@@ -58,15 +58,13 @@ function App() {
 
   const inputKeydown = (e) => {
     if (e.key === 'Enter' && roomId !== null) {
-      fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "POST", mode: "cors", headers: {
+      fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "POST", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       }, body: JSON.stringify({
         "name": userName,
         "text": e.target.value
       })})
-
-      fetchMessageData()
 
       e.target.value = ""
     }
@@ -92,7 +90,7 @@ function App() {
         }
       }
       if (!roomIsFound){
-        fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", mode: "cors", headers: {
+        fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
         }, body: JSON.stringify({
