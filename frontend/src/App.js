@@ -45,20 +45,20 @@ function App() {
   }
 
   function fetchRoomData(){
-    fetch("https://cool-team-backend.herokuapp.com/rooms", { method: "GET"})
+    fetch("https://cool-team-backend.herokuapp.com/rooms", { method: "GET", mode: "cors"})
       .then(data => data.json())
       .then(data => setRoomData(data))
   }
 
   function fetchMessageData(){
-    fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "GET"})
+    fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "GET", mode: "cors"})
       .then(data => data.json())
       .then(data => setMessageData(data))
   }
 
   const inputKeydown = (e) => {
     if (e.key === 'Enter' && roomId !== null) {
-      fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "POST", headers: {
+      fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "POST", mode: "cors", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
       }, body: JSON.stringify({
@@ -92,7 +92,7 @@ function App() {
         }
       }
       if (!roomIsFound){
-        fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", headers: {
+        fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", mode: "cors", headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
         }, body: JSON.stringify({
