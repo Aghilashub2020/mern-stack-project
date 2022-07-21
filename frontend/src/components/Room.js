@@ -20,52 +20,55 @@ export default (props) => {
     
       
 
-    const sendMessage = (e, isInput) => {
-      if (isInput) {
-        if (e.key === "Enter" && roomId !== null) {
-          fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: userName,
-              text: input,
-            }),
-          });
-          
-        } else {
-          fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: userName,
-              text: input,
-            }),
-          });
-        }
-    
-    }
+const sendMessage = (e, isInput) => {
+  if (isInput) {
+    if (e.key === "Enter" && roomId !== null) {
+      fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: userName,
+          text: input,
+        }),
+      });  
+    } 
+  } else {
+    fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: userName,
+        text: input,
+      }),
+    });
   }
+  setInput("")
+}
 
     const renderInput = () => {
       return (
         <div>
           <input
+            value={input}
             type="text"
+            onChange={(e => e.target.value = input)}
             onKeyDown={(e) => {
-              sendMessage(e, true);
+              if (e.key === 'Enter') {
+                sendMessage(e,true)
+              } else if (e.key.length === 1) {
+                setInput(input + e.key)
+              } else if (e.key === 'Backspace' && input.length !== 0) {
+                setInput(input.slice(0, -1))
+              }
             }}
             placeholder="Type here"
-            onChange={ (e) => {
-              setInput (e.target.value)
-            }
-
-            }
+            
             
           />
         <button onClick={(e)=> sendMessage (e,false) }>Enter</button>
