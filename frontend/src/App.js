@@ -45,13 +45,13 @@ function App() {
   }
 
   function fetchRoomData(){
-    fetch("https://cool-team-backend.herokuapp.com/rooms", { method: "GET"})
+    fetch("https://cool-team-backend.herokuapp.com/rooms", { method: "GET", mode: "cors"})
       .then(data => data.json())
       .then(data => setRoomData(data))
   }
 
   function fetchMessageData(){
-    fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "GET"})
+    fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "GET", mode: "cors"})
       .then(data => data.json())
       .then(data => setMessageData(data))
   }
@@ -65,8 +65,6 @@ function App() {
         "name": userName,
         "text": e.target.value
       })})
-
-      fetchMessageData()
 
       e.target.value = ""
     }
