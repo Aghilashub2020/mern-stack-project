@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import Room from './components/Room'
 import HomePage from './components/HomePage'
 
+import { fetchRoomData } from './functions'
+
 function App() {
   const [roomName, setRoomName] = useState(null)
   const [inRoom, setInRoom] = useState(false)
@@ -12,30 +14,6 @@ function App() {
   const [userName, setUserName] = useState("New user")
   const [roomIsFound, setRoomIsFound] = useState(false)
 
-  const messageInterval = {
-    interval: null,
-    start: function() {
-      this.interval = setInterval(() => {
-        fetchMessageData()
-      }, 1000)
-    },
-    stop: function() {
-      clearInterval(this.interval)
-    }
-  }
-
-  const roomInterval = {
-    interval: null,
-    start: function() {
-      this.interval = setInterval(() => {
-        fetchRoomData()
-      },5000)
-    },
-    stop: function() {
-      clearInterval(this.interval)
-    }
-  }
-
   const goBack = () => {
     setRoomName(null)
     setRoomId(null)
@@ -44,17 +22,6 @@ function App() {
     setMessageData(null)
   }
 
-  function fetchRoomData(){
-    fetch("https://cool-team-backend.herokuapp.com/rooms", { method: "GET", mode: "cors"})
-      .then(data => data.json())
-      .then(data => setRoomData(data))
-  }
-
-  function fetchMessageData(){
-    fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "GET", mode: "cors"})
-      .then(data => data.json())
-      .then(data => setMessageData(data))
-  }
 
   const inputKeydown = (e) => {
     if (e.key === 'Enter' && roomId !== null) {
@@ -80,50 +47,55 @@ function App() {
 
   const roomSelect = (e, setRoomName, setRoomId, roomData, setInRoom) => {
     if (e.key === 'Enter') {
-      for(let i = 0; i < roomData.length; i++) {
-        if (roomData[i].name === e.target.value) {
-          setRoomName(e.target.value)
-          setRoomId(roomData[i]._id)
-          setRoomIsFound(true)
-          setInRoom(true)
-          return
+      if (userName !== "New user") {
+        for(let i = 0; i < roomData.length; i++) {
+          if (roomData[i].name === e.target.value) {
+            setRoomName(e.target.value)
+            setRoomId(roomData[i]._id)
+            setRoomIsFound(true)
+            setInRoom(true)
+            return
+          }
         }
-      }
-      if (!roomIsFound){
-        fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-        }, body: JSON.stringify({
-        "name": e.target.value
-        })})
-          .then(fetchRoomData)
-          .then(() => {
-            for(let i = 0; i < roomData.length; i++) {
-              if (roomData[i].name === roomName) {
-                setRoomId(roomData[i]._id)
-                return
+        if (!roomIsFound){
+          fetch(`https://cool-team-backend.herokuapp.com/rooms/`, { method: "POST", headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+          }, body: JSON.stringify({
+          "name": e.target.value
+          })})
+            .then(() => fetchRoomData(setRoomData))
+            .then(() => {
+              for(let i = 0; i < roomData.length; i++) {
+                if (roomData[i].name === roomName) {
+                  setRoomId(roomData[i]._id)
+                  setRoomIsFound(true)
+                  setInRoom(true)
+                  return
+                }
               }
-            }
-          })
-          .then(setInRoom(true), setRoomIsFound(true))
+            })
+          }
         }
       }
   }
 
-  useEffect(() => {
-    if (roomId !== null) {
-      fetchMessageData()
-      messageInterval.start()
-      return () => {
-        messageInterval.stop()
-      }
+  const roomInterval = {
+    interval: null,
+    start: function(fetchRoomData, setRoomData) {
+      this.interval = setInterval(() => {
+        fetchRoomData(setRoomData)
+      },5000)
+    },
+    stop: function() {
+      clearInterval(this.interval)
     }
-  }, [roomId])
+  }
 
   useEffect(() => {
     if (!inRoom) {
-      fetchRoomData()
-      roomInterval.start()
+      fetchRoomData(setRoomData)
+      roomInterval.start(fetchRoomData, setRoomData)
       return () => {
         roomInterval.stop()
       }
@@ -133,9 +105,9 @@ function App() {
   return (
     <div className="App">
       {(inRoom && (roomId) !== null) ? <Room messageData={messageData}
-      inRoom={inRoom}
+      roomId={roomId} inRoom={inRoom}
       inputKeydown={inputKeydown}
-      setInRoom={setInRoom}
+      setMessageData={setMessageData} setInRoom={setInRoom}
       roomName={roomName} goBack={goBack}/> :
       <HomePage roomData={roomData} setInRoom={setInRoom}
       setRoomId={setRoomId} userName={userName} setRoomName={setRoomName}
