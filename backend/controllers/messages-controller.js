@@ -35,7 +35,7 @@ messagesController.post("/:room", jsonParser, (req, res) => {
         text: req.body.text,
         room: req.params.room
     })
-    newMessage.save(err => {
+    newMessage.save(err => {z
         if (err) {
             console.log(err)
         }
