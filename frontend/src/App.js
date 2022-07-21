@@ -23,19 +23,7 @@ function App() {
   }
 
 
-  const inputKeydown = (e) => {
-    if (e.key === 'Enter' && roomId !== null) {
-      fetch(`https://cool-team-backend.herokuapp.com/messages/${roomId}`, { method: "POST", headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      }, body: JSON.stringify({
-        "name": userName,
-        "text": e.target.value
-      })})
-
-      e.target.value = ""
-    }
-  }
+  
 
   const userNameInput = (e,name,callback) => {
     if (e.key === 'Enter') {
@@ -105,8 +93,7 @@ function App() {
   return (
     <div className="App">
       {(inRoom && (roomId) !== null) ? <Room messageData={messageData}
-      roomId={roomId} inRoom={inRoom}
-      inputKeydown={inputKeydown}
+      roomId={roomId} inRoom={inRoom} userName={userName}
       setMessageData={setMessageData} setInRoom={setInRoom}
       roomName={roomName} goBack={goBack}/> :
       <HomePage roomData={roomData} setInRoom={setInRoom}
